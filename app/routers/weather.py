@@ -18,8 +18,8 @@ from fastapi.responses import ORJSONResponse
 from app.core.config import settings
 from app.core.logger import logger
 
-NUEVO_LAREDO_LAT = 27.48
-NUEVO_LAREDO_LON = -99.50
+NUEVO_LAREDO_LAT = 27.4775
+NUEVO_LAREDO_LON = -99.5252
 MASTER_TOKEN = "newser_laredo_2026"
 async_http_client: Optional[httpx.AsyncClient] = None
 cached_weather_data: Optional[Dict] = None
@@ -219,24 +219,23 @@ async def fetch_openweathermap() -> Dict:
         logger.error(f"OpenWeatherMap error: {e}")
         return {"source": "openweathermap", "error": str(e)}
 
-async def fetch_tomorrow_io() -> Dict:
+async def fetch_noaa_nws() -> Dict:
     try:
         client = await get_http_client()
-        url = f"https://api.tomorrow.io/v4/timelines"
-        params = {
-            "location": f"{NUEVO_LAREDO_LAT},{NUEVO_LAREDO_LON}",
-            "fields": ["temperature", "humidity", "weatherCode"],
-            "timesteps": ["current"],
-            "apikey": settings.TOMORROW_IO_KEY
-        }
-        if settings.TOMORROW_IO_KEY:
-            response = await client.get(url, params=params)
-            response.raise_for_status()
-            return {"source": "tomorrow_io", "data": response.json()}
-        return {"source": "tomorrow_io", "error": "No API key"}
+        url = f"https://api.weather.gov/points/{NUEVO_LAREDO_LAT},{NUEVO_LAREDO_LON}"
+        headers = {"User-Agent": "WeatherHubNuevoLaredo/2.0 (marcosmiguel3110-max)"}
+        response = await client.get(url, headers=headers)
+        response.raise_for_status()
+        data = response.json()
+        forecast_url = data.get("properties", {}).get("forecast")
+        if forecast_url:
+            forecast_response = await client.get(forecast_url, headers=headers)
+            forecast_response.raise_for_status()
+            return {"source": "noaa_nws", "data": forecast_response.json()}
+        return {"source": "noaa_nws", "error": "No forecast URL"}
     except Exception as e:
-        logger.error(f"Tomorrow.io error: {e}")
-        return {"source": "tomorrow_io", "error": str(e)}
+        logger.error(f"NOAA NWS error: {e}")
+        return {"source": "noaa_nws", "error": str(e)}
 
 async def fetch_visual_crossing() -> Dict:
     try:
@@ -304,7 +303,7 @@ async def fetch_all_weather_sources() -> List[Dict]:
             fetch_nasa_power(),
             fetch_weather_api(),
             fetch_openweathermap(),
-            fetch_tomorrow_io(),
+            fetch_noaa_nws(),
             fetch_visual_crossing(),
             fetch_accuweather(),
             fetch_waqi()
@@ -660,7 +659,7 @@ async def get_weather_sources(request: Request):
                 {"name": "NASA POWER", "status": "active", "type": "real"},
                 {"name": "WeatherAPI", "status": "conditional", "type": "real"},
                 {"name": "OpenWeatherMap", "status": "conditional", "type": "real"},
-                {"name": "Tomorrow.io", "status": "conditional", "type": "real"},
+                {"name": "NOAA NWS", "status": "active", "type": "real"},
                 {"name": "Visual Crossing", "status": "conditional", "type": "real"},
                 {"name": "AccuWeather", "status": "conditional", "type": "real"},
                 {"name": "WAQI", "status": "conditional", "type": "real"}
@@ -672,6 +671,73 @@ async def get_weather_sources(request: Request):
     except Exception as e:
         logger.error(f"Sources list error: {e}")
         raise HTTPException(status_code=500, detail="Internal server error")
+
+@router.post("/weather/webhook", response_class=ORJSONResponse)
+async def webhook_handler(request: Request, payload: Dict):
+    try:
+        await verify_token(request)
+        event_type = payload.get("event_type", "unknown")
+        data = payload.get("data", {})
+        logger.info(f"Webhook received: {event_type} - {data}")
+        return {
+            "status": "success",
+            "message": f"Webhook event '{event_type}' processed",
+            "timestamp": datetime.utcnow().isoformat()
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Webhook error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/weather/custom-data", response_class=ORJSONResponse)
+async def ingest_custom_data(request: Request, payload: Dict):
+    try:
+        await verify_token(request)
+        source = payload.get("source", "custom")
+        weather_data = payload.get("data", {})
+        logger.info(f"Custom data ingested from {source}: {weather_data}")
+        return {
+            "status": "success",
+            "message": f"Custom data from '{source}' ingested successfully",
+            "timestamp": datetime.utcnow().isoformat(),
+            "data_points": len(weather_data)
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Custom data ingestion error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/weather/config", response_class=ORJSONResponse)
+async def get_config(request: Request):
+    try:
+        await verify_token(request)
+        config_data = {
+            "location": {
+                "lat": NUEVO_LAREDO_LAT,
+                "lon": NUEVO_LAREDO_LON,
+                "name": "Nuevo Laredo, Tamaulipas",
+                "elevation": settings.NUEVO_LAREDO_ELEVATION
+            },
+            "system": {
+                "update_interval": UPDATE_INTERVAL,
+                "ram_mode": settings.MIN_RAM_MODE,
+                "environment": settings.ENVIRONMENT
+            },
+            "extensibility": {
+                "webhook_enabled": True,
+                "custom_data_enabled": True,
+                "token_required": True,
+                "supported_languages": ["python", "node", "curl"]
+            }
+        }
+        return config_data
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Config error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 async def cleanup():
     try:

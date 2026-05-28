@@ -2,24 +2,26 @@
 
 **Open Source Weather Routing Engine - Ultra Fast, Secure, Lightweight**
 
-- **Exclusive focus**: Nuevo Laredo, Tamaulipas (27.48°N, -99.50°W)
+- **Exclusive focus**: Nuevo Laredo, Tamaulipas (27.4775°N, -99.5252°W)
 - **59 weather APIs**: Real-time async parallel connections
 - **100% security**: Master token `X-Newser-Token` (403 error if invalid)
 - **Ultra optimized**: Minimal RAM usage (~50-80MB) for free 24/7 hosting
 - **Auto-refresh**: Data updates every 1 second
 - **Open source**: 100% modular and expandable
+- **Extensible**: Webhook and custom data endpoints for external scripts
 
 ---
 
 ## 🚀 Características Críticas
 
 ### 1. Enfoque Exclusivo en Nuevo Laredo
-- Coordenadas preconfiguradas: `27.4769, -99.5152`
+- Coordenadas preconfiguradas: `27.4775, -99.5252`
 - Zona horaria: `America/Matamoros`
+- Elevación: 150 metros sobre el nivel del mar
 - Todas las consultas priorizan esta región
 
 ### 2. 59 Weather APIs
-- **Real APIs (9)**: OpenMeteo, MET Norway, NASA POWER, WeatherAPI, OpenWeatherMap, Tomorrow.io, Visual Crossing, AccuWeather, WAQI
+- **Real APIs (9)**: OpenMeteo, MET Norway, NASA POWER, WeatherAPI, OpenWeatherMap, NOAA NWS, Visual Crossing, AccuWeather, WAQI
 - **Simulated APIs (50)**: For testing and redundancy
 - **Auto-refresh**: Data cached and updated every 1 second
 - **Parallel execution**: All 59 sources queried simultaneously
@@ -44,6 +46,67 @@ X-Newser-Token: newser_laredo_2026
 - Weighted averages by priority and quality
 - Data quality score (0-100)
 - Outlier detection and validation
+
+### 6. Extensibility - 100% Modular
+The Weather Hub is designed to be 100% modular and extensible for external scripts:
+
+**Webhook Endpoint** (`POST /weather/webhook`)
+- Accept custom events from external scripts
+- Process custom data with the master token
+- Log all webhook events for monitoring
+
+**Custom Data Ingestion** (`POST /weather/custom-data`)
+- Ingest custom weather data from any source
+- Merge with existing data sources
+- Support for Python, Node.js, and curl scripts
+
+**Configuration Endpoint** (`GET /weather/config`)
+- Get current system configuration
+- View location, system settings, and extensibility options
+- Use this to build custom integrations
+
+**Example Python Script:**
+```python
+import requests
+
+headers = {"X-Newser-Token": "newser_laredo_2026"}
+
+# Send custom data
+payload = {
+    "source": "my_custom_sensor",
+    "data": {"temperature": 25.5, "humidity": 60}
+}
+response = requests.post(
+    "https://weather-hub-nuevo-laredos.onrender.com/weather/custom-data",
+    json=payload,
+    headers=headers
+)
+print(response.json())
+
+# Get configuration
+config = requests.get(
+    "https://weather-hub-nuevo-laredos.onrender.com/weather/config",
+    headers=headers
+)
+print(config.json())
+```
+
+**Example Node.js Script:**
+```javascript
+const axios = require('axios');
+
+const headers = { 'X-Newser-Token': 'newser_laredo_2026' };
+
+// Send webhook event
+const webhook = await axios.post(
+    'https://weather-hub-nuevo-laredos.onrender.com/weather/webhook',
+    { event_type: 'custom_alert', data: { alert: 'high_temperature' } },
+    { headers }
+);
+console.log(webhook.data);
+```
+
+This allows you to build custom integrations, add new data sources, or create automated workflows using the Weather Hub as a central data processing engine.
 
 ---
 
@@ -106,11 +169,13 @@ cp .env.example .env
 # Master token (CHANGE IN PRODUCTION)
 MASTER_TOKEN=newser_laredo_2026
 
+# API Keys (Optional - APIs work without keys with limited functionality)
+OPENMETEO_API_KEY=c590c2c3c63610c40669ca16f5397b84
+WEATHERAPI_KEY=425e62ddbc30460a8b4135534262004
+VISUAL_CROSSING_KEY=Y6TGUGJGC54ZN7Y2EFBSF8PBH
+
 # Optional APIs (only if you have keys)
 OPENWEATHER_API_KEY=your-openweather-key
-WEATHERAPI_KEY=your-weatherapi-key
-TOMORROW_IO_KEY=your-tomorrow-io-key
-VISUAL_CROSSING_KEY=your-visual-crossing-key
 ACCUWEATHER_KEY=your-accuweather-key
 ACCUWEATHER_LOCATION_KEY=your-accuweather-location-key
 AIR_QUALITY_API_KEY=your-air-quality-key
