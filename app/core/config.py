@@ -10,7 +10,7 @@ class Settings(BaseSettings):
         extra="ignore",
     )
 
-    APP_NAME: str = "Newser Pro Cloud - Weather Hub Nuevo Laredo"
+    APP_NAME: str = "Weather Hub Nuevo Laredo v2.0"
     ENVIRONMENT: str = "production"
     SECRET_KEY: str = "change-this-in-production-use-openssl-rand-hex-32"
     DEBUG: bool = False
