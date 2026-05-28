@@ -405,14 +405,14 @@ async def fetch_all_weather_sources() -> List[Dict]:
             fetch_nasa_power(),
             fetch_weather_api(),
             fetch_openweathermap(),
-            fetch_noaa_nws(),
+            # fetch_noaa_nws(),  # Disabled - NOAA only covers US, Nuevo Laredo is in Mexico
             fetch_visual_crossing(),
             fetch_accuweather(),
             fetch_waqi(),
-            fetch_weatherbit(),
+            # fetch_weatherbit(),  # Disabled - 403 Forbidden, API doesn't support Mexico
             fetch_pirate_weather(),
             fetch_world_weather_online(),
-            fetch_qweather(),
+            # fetch_qweather(),  # Disabled - 403 Forbidden, API doesn't support Mexico
             fetch_aerisweather(),
             fetch_climacell()
         ]
@@ -756,8 +756,8 @@ async def get_weather_sources(request: Request):
         sources_data = {
             "location": "Nuevo Laredo, Tamaulipas",
             "timestamp": datetime.utcnow().isoformat(),
-            "total_sources": 15,
-            "real_apis": 15,
+            "total_sources": 12,
+            "real_apis": 12,
             "simulated_sources": 0,
             "api_list": [
                 {"name": "OpenMeteo", "status": "active", "type": "real"},
@@ -765,14 +765,11 @@ async def get_weather_sources(request: Request):
                 {"name": "NASA POWER", "status": "active", "type": "real"},
                 {"name": "WeatherAPI", "status": "conditional", "type": "real"},
                 {"name": "OpenWeatherMap", "status": "conditional", "type": "real"},
-                {"name": "NOAA NWS", "status": "active", "type": "real"},
                 {"name": "Visual Crossing", "status": "conditional", "type": "real"},
                 {"name": "AccuWeather", "status": "conditional", "type": "real"},
                 {"name": "WAQI", "status": "conditional", "type": "real"},
-                {"name": "Weatherbit", "status": "conditional", "type": "real"},
                 {"name": "Pirate Weather", "status": "conditional", "type": "real"},
                 {"name": "World Weather Online", "status": "conditional", "type": "real"},
-                {"name": "QWeather", "status": "conditional", "type": "real"},
                 {"name": "AerisWeather", "status": "conditional", "type": "real"},
                 {"name": "Climacell", "status": "conditional", "type": "real"}
             ]
