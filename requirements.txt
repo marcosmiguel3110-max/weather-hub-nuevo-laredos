@@ -19,7 +19,7 @@ httpx==0.28.0                    # Cliente HTTP asíncrono ultra rápido
 # ── Utilidades esenciales ────────────────────────────────────────────────────
 python-dotenv==1.0.1
 orjson==3.10.12                  # JSON ultra rápido (menos RAM que json estándar)
-soundcard==0.4.2                 # Captura de audio desde Line In para LNB INGEST
+# soundcard==0.4.2              # Removed - requires PulseAudio, not compatible with Docker
 
 # ── Dependencias opcionales (Descomentar solo si se necesitan) ──────────────
 # aiosqlite==0.20.0             # SQLite asíncrono (solo si necesitas persistencia)
