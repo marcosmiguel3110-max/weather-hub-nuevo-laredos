@@ -111,6 +111,32 @@ This allows you to build custom integrations, add new data sources, or create au
 
 ---
 
+## 🔧 Keeping the Service Awake (Cron Job)
+
+Render's free tier puts services to sleep after 15 minutes of inactivity. To keep your Weather Hub awake 24/7, use one of these methods:
+
+### Method 1: UptimeRobot (Recommended - Free)
+1. Go to https://uptimerobot.com
+2. Create a free account
+3. Add a new monitor:
+   - **Monitor Type**: HTTP(s)
+   - **URL**: `https://weather-hub-nuevo-laredos.onrender.com/health`
+   - **Monitoring Interval**: 5 minutes
+4. Save and the service will stay awake
+
+### Method 2: Render Cron Job
+1. Go to Render dashboard
+2. Create a new "Cron Job"
+3. Configure:
+   - **Name**: weather-hub-keep-awake
+   - **Schedule**: `*/5 * * * *` (every 5 minutes)
+   - **Command**: `curl https://weather-hub-nuevo-laredos.onrender.com/health`
+4. Deploy
+
+---
+
+---
+
 ## Project Structure
 
 ```
