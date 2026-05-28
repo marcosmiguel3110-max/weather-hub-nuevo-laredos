@@ -1,0 +1,35 @@
+# ╔══════════════════════════════════════════════════════════════╗
+# ║   WEATHER HUB NUEVO LAREDO — Dependencias Ultra Ligeras     ║
+# ║   Optimizadas para hosting gratuito 24/7 • Mínimo RAM      ║
+# ╚══════════════════════════════════════════════════════════════╝
+
+# ── Servidor principal (Ultra ligero) ─────────────────────────────────────────
+fastapi==0.115.5
+uvicorn[standard]==0.32.0
+# gunicorn==23.0.0              # Solo para producción con múltiples workers
+
+# ── Configuración ─────────────────────────────────────────────────────────────
+pydantic==2.10.1
+pydantic-settings==2.6.1
+
+# ── HTTP async (Core del sistema) ────────────────────────────────────────────
+httpx==0.28.0                    # Cliente HTTP asíncrono ultra rápido
+# requests==2.32.3              # Solo para SDK cliente (no necesario en servidor)
+
+# ── Utilidades esenciales ────────────────────────────────────────────────────
+python-dotenv==1.0.1
+orjson==3.10.12                  # JSON ultra rápido (menos RAM que json estándar)
+soundcard==0.4.2                 # Captura de audio desde Line In para LNB INGEST
+
+# ── Dependencias opcionales (Descomentar solo si se necesitan) ──────────────
+# aiosqlite==0.20.0             # SQLite asíncrono (solo si necesitas persistencia)
+# redis==5.2.0                  # Redis/Upstash (solo si necesitas cache distribuido)
+# asyncpg==0.30.0               # PostgreSQL/Supabase (solo si necesitas DB externa)
+
+# ── IA / ML (NO INSTALAR en hosting gratuito) ─────────────────────────────────
+# Estas dependencias requieren mucha RAM y no son necesarias para el core
+# transformers==4.46.3         # Requiere ~2GB RAM extra
+# torch==2.5.1                  # CPU build: --index-url https://download.pytorch.org/whl/cpu
+# onnxruntime==1.20.1           # Alternativa ligera para CPU
+
+# ── Total estimado de RAM: ~50-80MB (sin dependencias opcionales) ─────────────
