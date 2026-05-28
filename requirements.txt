@@ -14,6 +14,7 @@ pydantic-settings==2.6.1
 
 # ── HTTP async (Core del sistema) ────────────────────────────────────────────
 httpx==0.28.0                    # Cliente HTTP asíncrono ultra rápido
+h2==4.1.0                        # HTTP/2 support for httpx
 # requests==2.32.3              # Solo para SDK cliente (no necesario en servidor)
 
 # ── Utilidades esenciales ────────────────────────────────────────────────────
