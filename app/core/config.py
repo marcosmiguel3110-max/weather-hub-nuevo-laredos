@@ -27,6 +27,7 @@ class Settings(BaseSettings):
     OPENMETEO_BASE_URL: str = "https://api.open-meteo.com/v1"
     OPENMETEO_API_KEY: str = "c590c2c3c63610c40669ca16f5397b84"
     OPENWEATHER_BASE_URL: str = "https://api.openweathermap.org/data/2.5"
+    OPENWEATHER_API_KEY: str = ""
     
     MET_NORWAY_BASE_URL: str = "https://api.met.no/weatherapi/locationforecast"
     
