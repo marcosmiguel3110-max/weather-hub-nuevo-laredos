@@ -10,7 +10,7 @@ from fastapi.responses import JSONResponse
 from app.core.config import settings
 from app.core.logger import logger
 from app.core.security import verify_master_token
-from app.core.weather_router import weather_router
+from app.routers.weather import router as weather_router
 from app.api.v1.router import api_router
 
 @asynccontextmanager
@@ -29,7 +29,6 @@ async def lifespan(app: FastAPI):
     finally:
         try:
             logger.info("Closing Weather Hub...")
-            await weather_router.close()
             gc.collect()
         except Exception as e:
             logger.error(f"Shutdown error: {e}")
@@ -105,6 +104,7 @@ def create_app() -> FastAPI:
                 raise
 
         app.include_router(api_router, prefix="/v1")
+        app.include_router(weather_router)
 
         @app.get("/", tags=["Health"])
         async def root():
