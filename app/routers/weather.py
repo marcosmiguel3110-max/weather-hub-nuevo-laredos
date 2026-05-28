@@ -7,7 +7,11 @@ import numpy as np
 
 import httpx
 import orjson
-import soundcard as sc
+try:
+    import soundcard as sc
+    SOUNDCARD_AVAILABLE = True
+except ImportError:
+    SOUNDCARD_AVAILABLE = False
 from fastapi import APIRouter, HTTPException, Request, status
 from fastapi.responses import ORJSONResponse
 
@@ -51,6 +55,8 @@ class LNBIngest:
     
     async def capture_line_in_voltage(self, duration_ms: int = 100) -> float:
         try:
+            if not SOUNDCARD_AVAILABLE:
+                return -100.0
             default_mic = sc.default_microphone()
             with default_mic.recorder(samplerate=44100, channels=1) as mic:
                 data = mic.record(numframes=duration_ms * 44.1)
