@@ -56,9 +56,30 @@ class Settings(BaseSettings):
     
     METEOALARM_URL: str = "https://www.meteoalarm.eu"
     
-    MAX_CONCURRENT_REQUESTS: int = 50
-    REQUEST_TIMEOUT_SECONDS: float = 3.0
-    CONNECTION_POOL_SIZE: int = 20
+    # Additional Free APIs
+    WEATHERBIT_KEY: str = ""
+    WEATHERBIT_BASE_URL: str = "https://api.weatherbit.io/v2.0"
+    
+    PIRATE_WEATHER_KEY: str = ""
+    PIRATE_WEATHER_BASE_URL: str = "https://api.pirateweather.net/forecast"
+    
+    YR_NO_BASE_URL: str = "https://api.met.no/weatherapi/locationforecast"
+    
+    WORLD_WEATHER_ONLINE_KEY: str = ""
+    WORLD_WEATHER_ONLINE_BASE_URL: str = "https://api.worldweatheronline.com/premium/v1/weather.ashx"
+    
+    QWEATHER_KEY: str = ""
+    QWEATHER_BASE_URL: str = "https://devapi.qweather.com/v7"
+    
+    AERISWEATHER_KEY: str = ""
+    AERISWEATHER_BASE_URL: str = "https://api.aerisweather.com"
+    
+    CLIMACELL_KEY: str = ""
+    CLIMACELL_BASE_URL: str = "https://api.climacell.co"
+    
+    MAX_CONCURRENT_REQUESTS: int = 15
+    REQUEST_TIMEOUT_SECONDS: float = 2.0
+    CONNECTION_POOL_SIZE: int = 15
     ENABLE_CACHING: bool = True
     CACHE_TTL_SECONDS: int = 300
     

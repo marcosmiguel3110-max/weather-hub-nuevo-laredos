@@ -237,6 +237,108 @@ async def fetch_noaa_nws() -> Dict:
         logger.error(f"NOAA NWS error: {e}")
         return {"source": "noaa_nws", "error": str(e)}
 
+async def fetch_weatherbit() -> Dict:
+    try:
+        client = await get_http_client()
+        url = f"{settings.WEATHERBIT_BASE_URL}/current"
+        params = {
+            "lat": NUEVO_LAREDO_LAT,
+            "lon": NUEVO_LAREDO_LON,
+            "key": settings.WEATHERBIT_KEY
+        }
+        if settings.WEATHERBIT_KEY:
+            response = await client.get(url, params=params)
+            response.raise_for_status()
+            return {"source": "weatherbit", "data": response.json()}
+        return {"source": "weatherbit", "error": "No API key"}
+    except Exception as e:
+        logger.error(f"Weatherbit error: {e}")
+        return {"source": "weatherbit", "error": str(e)}
+
+async def fetch_pirate_weather() -> Dict:
+    try:
+        client = await get_http_client()
+        url = f"{settings.PIRATE_WEATHER_BASE_URL}/{NUEVO_LAREDO_LAT},{NUEVO_LAREDO_LON}"
+        params = {"appid": settings.PIRATE_WEATHER_KEY}
+        if settings.PIRATE_WEATHER_KEY:
+            response = await client.get(url, params=params)
+            response.raise_for_status()
+            return {"source": "pirate_weather", "data": response.json()}
+        return {"source": "pirate_weather", "error": "No API key"}
+    except Exception as e:
+        logger.error(f"Pirate Weather error: {e}")
+        return {"source": "pirate_weather", "error": str(e)}
+
+async def fetch_world_weather_online() -> Dict:
+    try:
+        client = await get_http_client()
+        url = settings.WORLD_WEATHER_ONLINE_BASE_URL
+        params = {
+            "q": f"{NUEVO_LAREDO_LAT},{NUEVO_LAREDO_LON}",
+            "key": settings.WORLD_WEATHER_ONLINE_KEY,
+            "format": "json"
+        }
+        if settings.WORLD_WEATHER_ONLINE_KEY:
+            response = await client.get(url, params=params)
+            response.raise_for_status()
+            return {"source": "world_weather_online", "data": response.json()}
+        return {"source": "world_weather_online", "error": "No API key"}
+    except Exception as e:
+        logger.error(f"World Weather Online error: {e}")
+        return {"source": "world_weather_online", "error": str(e)}
+
+async def fetch_qweather() -> Dict:
+    try:
+        client = await get_http_client()
+        url = f"{settings.QWEATHER_BASE_URL}/weather/now"
+        params = {
+            "location": f"{NUEVO_LAREDO_LAT},{NUEVO_LAREDO_LON}",
+            "key": settings.QWEATHER_KEY
+        }
+        if settings.QWEATHER_KEY:
+            response = await client.get(url, params=params)
+            response.raise_for_status()
+            return {"source": "qweather", "data": response.json()}
+        return {"source": "qweather", "error": "No API key"}
+    except Exception as e:
+        logger.error(f"QWeather error: {e}")
+        return {"source": "qweather", "error": str(e)}
+
+async def fetch_aerisweather() -> Dict:
+    try:
+        client = await get_http_client()
+        url = f"{settings.AERISWEATHER_BASE_URL}/observations/current"
+        params = {
+            "p": f"{NUEVO_LAREDO_LAT},{NUEVO_LAREDO_LON}",
+            "client_id": settings.AERISWEATHER_KEY,
+            "client_secret": settings.AERISWEATHER_KEY
+        }
+        if settings.AERISWEATHER_KEY:
+            response = await client.get(url, params=params)
+            response.raise_for_status()
+            return {"source": "aerisweather", "data": response.json()}
+        return {"source": "aerisweather", "error": "No API key"}
+    except Exception as e:
+        logger.error(f"AerisWeather error: {e}")
+        return {"source": "aerisweather", "error": str(e)}
+
+async def fetch_climacell() -> Dict:
+    try:
+        client = await get_http_client()
+        url = f"{settings.CLIMACELL_BASE_URL}/weather/nowcast"
+        params = {
+            "location": f"{NUEVO_LAREDO_LAT},{NUEVO_LAREDO_LON}",
+            "apikey": settings.CLIMACELL_KEY
+        }
+        if settings.CLIMACELL_KEY:
+            response = await client.get(url, params=params)
+            response.raise_for_status()
+            return {"source": "climacell", "data": response.json()}
+        return {"source": "climacell", "error": "No API key"}
+    except Exception as e:
+        logger.error(f"Climacell error: {e}")
+        return {"source": "climacell", "error": str(e)}
+
 async def fetch_visual_crossing() -> Dict:
     try:
         client = await get_http_client()
@@ -306,10 +408,14 @@ async def fetch_all_weather_sources() -> List[Dict]:
             fetch_noaa_nws(),
             fetch_visual_crossing(),
             fetch_accuweather(),
-            fetch_waqi()
+            fetch_waqi(),
+            fetch_weatherbit(),
+            fetch_pirate_weather(),
+            fetch_world_weather_online(),
+            fetch_qweather(),
+            fetch_aerisweather(),
+            fetch_climacell()
         ]
-        for i in range(50):
-            tasks.append(fetch_simulated_source(i))
         results = await asyncio.gather(*tasks, return_exceptions=True)
         valid_results = []
         for result in results:
@@ -650,9 +756,9 @@ async def get_weather_sources(request: Request):
         sources_data = {
             "location": "Nuevo Laredo, Tamaulipas",
             "timestamp": datetime.utcnow().isoformat(),
-            "total_sources": 59,
-            "real_apis": 9,
-            "simulated_sources": 50,
+            "total_sources": 15,
+            "real_apis": 15,
+            "simulated_sources": 0,
             "api_list": [
                 {"name": "OpenMeteo", "status": "active", "type": "real"},
                 {"name": "MET Norway", "status": "active", "type": "real"},
@@ -662,7 +768,13 @@ async def get_weather_sources(request: Request):
                 {"name": "NOAA NWS", "status": "active", "type": "real"},
                 {"name": "Visual Crossing", "status": "conditional", "type": "real"},
                 {"name": "AccuWeather", "status": "conditional", "type": "real"},
-                {"name": "WAQI", "status": "conditional", "type": "real"}
+                {"name": "WAQI", "status": "conditional", "type": "real"},
+                {"name": "Weatherbit", "status": "conditional", "type": "real"},
+                {"name": "Pirate Weather", "status": "conditional", "type": "real"},
+                {"name": "World Weather Online", "status": "conditional", "type": "real"},
+                {"name": "QWeather", "status": "conditional", "type": "real"},
+                {"name": "AerisWeather", "status": "conditional", "type": "real"},
+                {"name": "Climacell", "status": "conditional", "type": "real"}
             ]
         }
         return sources_data

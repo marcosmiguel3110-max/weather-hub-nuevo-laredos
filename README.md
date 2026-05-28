@@ -3,9 +3,9 @@
 **Open Source Weather Routing Engine - Ultra Fast, Secure, Lightweight**
 
 - **Exclusive focus**: Nuevo Laredo, Tamaulipas (27.4775°N, -99.5252°W)
-- **59 weather APIs**: Real-time async parallel connections
+- **15 real weather APIs**: All free, no simulated sources
 - **100% security**: Master token `X-Newser-Token` (403 error if invalid)
-- **Ultra optimized**: Minimal RAM usage (~50-80MB) for free 24/7 hosting
+- **Ultra optimized**: Minimal RAM usage (~40-60MB) for free 24/7 hosting
 - **Auto-refresh**: Data updates every 1 second
 - **Open source**: 100% modular and expandable
 - **Extensible**: Webhook and custom data endpoints for external scripts
@@ -20,11 +20,12 @@
 - Elevación: 150 metros sobre el nivel del mar
 - Todas las consultas priorizan esta región
 
-### 2. 59 Weather APIs
-- **Real APIs (9)**: OpenMeteo, MET Norway, NASA POWER, WeatherAPI, OpenWeatherMap, NOAA NWS, Visual Crossing, AccuWeather, WAQI
-- **Simulated APIs (50)**: For testing and redundancy
+### 2. 15 Real Weather APIs (All Free)
+- **Active APIs (4)**: OpenMeteo, MET Norway, NASA POWER, NOAA NWS
+- **Conditional APIs (11)**: WeatherAPI, OpenWeatherMap, Visual Crossing, AccuWeather, WAQI, Weatherbit, Pirate Weather, World Weather Online, QWeather, AerisWeather, Climacell
+- **No simulated sources**: All data is real
 - **Auto-refresh**: Data cached and updated every 1 second
-- **Parallel execution**: All 59 sources queried simultaneously
+- **Parallel execution**: All 15 sources queried simultaneously
 
 ### 3. Security
 ```bash
